@@ -1,0 +1,25 @@
+# Environment secrets
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Test files
+test_evidence.txt
+
+# Uploaded evidence
+uploads/
+storage/
+
+# Encrypted files
+*.enc
+
+# Node
+node_modules/
+dist/
+
+# VS Code
+.vscode/

@@ -1,0 +1,10 @@
+{
+  "name": "secure-evidence-system",
+  "private": true,
+  "scripts": {
+    "start": "concurrently -n BACKEND,FRONTEND \"cd backend && venv\\Scripts\\python.exe -m uvicorn main:app --reload\" \"cd frontend && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
