@@ -684,16 +684,15 @@ const handleForgotPassword = async () => {
             </div>
 
             <div>
-              <h1>
-                Secure Digital{" "}
-                <span>Evidence</span>
-              </h1>
+  <h1>
+    ECDAT
+  </h1>
 
-              <p>
-                Management System
-              </p>
+  <p>
+    Enterprise Cryptographic Discovery & Analysis Tool
+  </p>
 
-              <div className="brand-line">
+  <div className="brand-line">
                 AUTHENTIC
                 <b>•</b>
                 SECURE
