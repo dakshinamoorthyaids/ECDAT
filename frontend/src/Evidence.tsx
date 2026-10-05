@@ -19,6 +19,7 @@ import {
   Trash2,
 } from "lucide-react";
 
+import { API_BASE_URL } from "./api";
 import "./Evidence.css";
 
 interface EvidenceRecord {
@@ -49,10 +50,6 @@ interface EvidenceProps {
   onUpload: () => void;
   readOnly?: boolean;
 }
-
-const API_BASE_URL =
-  "http://127.0.0.1:8000";
-
 
 /* =========================================================
    FILE TYPE

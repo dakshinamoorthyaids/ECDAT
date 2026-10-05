@@ -16,9 +16,8 @@ import {
   UserCircle,
 } from "lucide-react";
 
+import { API_BASE_URL } from "./api";
 import "./ViewerDashboard.css";
-
-const API_BASE_URL = "http://127.0.0.1:8000";
 
 interface EvidenceItem {
   id?: number;
@@ -39,6 +38,7 @@ const ViewerDashboard: React.FC<ViewerDashboardProps> = ({ onLogout }) => {
   const [error, setError] = useState("");
 
   const username = localStorage.getItem("username") || "Viewer";
+  const role = localStorage.getItem("role") || "Viewer";
 
   const navigate = (
     page: "dashboard" | "evidence" | "custody" | "reports",
@@ -113,6 +113,14 @@ const ViewerDashboard: React.FC<ViewerDashboardProps> = ({ onLogout }) => {
   }, [evidence]);
 
   const recentEvidence = evidence.slice(0, 4);
+
+  const getStatusClass = (status?: string | null) => {
+    const normalized = String(status || "").trim().toLowerCase();
+
+    if (normalized === "verified") return "verified";
+    if (normalized === "tampered") return "tampered";
+    return "pending";
+  };
 
   return (
     <div className="viewer-dashboard">
@@ -199,7 +207,7 @@ const ViewerDashboard: React.FC<ViewerDashboardProps> = ({ onLogout }) => {
 
               <div>
                 <strong>{username}</strong>
-                <span>Viewer</span>
+                <span>{role}</span>
               </div>
 
               <ChevronDown size={17} />
@@ -220,8 +228,8 @@ const ViewerDashboard: React.FC<ViewerDashboardProps> = ({ onLogout }) => {
               </h1>
 
               <p>
-                Review authorized digital evidence, chain-of-custody records
-                and reports without modifying evidence.
+                Review authorized digital evidence, chain-of-custody records and
+                reports without modifying evidence.
               </p>
             </div>
 
@@ -312,9 +320,7 @@ const ViewerDashboard: React.FC<ViewerDashboardProps> = ({ onLogout }) => {
 
               <div className="viewer-evidence-list">
                 {loading && (
-                  <div className="viewer-empty">
-                    Loading evidence...
-                  </div>
+                  <div className="viewer-empty">Loading evidence...</div>
                 )}
 
                 {!loading && recentEvidence.length === 0 && (
@@ -335,26 +341,14 @@ const ViewerDashboard: React.FC<ViewerDashboardProps> = ({ onLogout }) => {
 
                       <div className="viewer-evidence-info">
                         <strong>
-                          {item.file_name ||
-                            item.title ||
-                            item.evidence_id}
+                          {item.file_name || item.title || item.evidence_id}
                         </strong>
 
-                        <span>
-                          {item.title || item.evidence_id}
-                        </span>
+                        <span>{item.title || item.evidence_id}</span>
                       </div>
 
                       <span
-                        className={`viewer-status ${
-                          String(item.status || "").toLowerCase() ===
-                          "verified"
-                            ? "verified"
-                            : String(item.status || "").toLowerCase() ===
-                                "tampered"
-                              ? "tampered"
-                              : "pending"
-                        }`}
+                        className={`viewer-status ${getStatusClass(item.status)}`}
                       >
                         {item.status || "Pending"}
                       </span>
@@ -424,7 +418,6 @@ const ViewerDashboard: React.FC<ViewerDashboardProps> = ({ onLogout }) => {
             </div>
           </section>
 
-          {/* FOOTER */}
           <footer className="viewer-footer">
             <div className="viewer-footer-content">
               <div className="viewer-footer-logo">
@@ -434,8 +427,7 @@ const ViewerDashboard: React.FC<ViewerDashboardProps> = ({ onLogout }) => {
               <span className="viewer-footer-text">
                 © 2026 Secure Digital Evidence Management System
                 &nbsp;|&nbsp;
-                Developed by{" "}
-                <strong>Team Cyphora</strong>
+                Developed by <strong>Team Cyphora</strong>
               </span>
             </div>
           </footer>

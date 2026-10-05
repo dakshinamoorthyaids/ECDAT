@@ -11,6 +11,7 @@ import {
   Link2,
   ClipboardList,
 } from "lucide-react";
+import { API_BASE_URL } from "./api";
 
 interface CaseRecord {
   id: number;
@@ -57,7 +58,7 @@ interface GenerateReportProps {
   onBack: () => void;
 }
 
-const API = "http://127.0.0.1:8000";
+const API = API_BASE_URL;
 
 const GenerateReport: React.FC<GenerateReportProps> = ({
   onBack,

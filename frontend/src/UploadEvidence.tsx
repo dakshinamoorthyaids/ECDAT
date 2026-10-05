@@ -17,6 +17,7 @@ import {
   FolderOpen,
 } from "lucide-react";
 
+import { API_BASE_URL } from "./api";
 import "./UploadEvidence.css";
 
 interface UploadEvidenceProps {
@@ -83,7 +84,7 @@ export default function UploadEvidence({
     const loadCases = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/cases"
+          `${API_BASE_URL}/cases`
         );
 
         if (!response.ok) {
@@ -305,7 +306,7 @@ export default function UploadEvidence({
       );
 
       const response = await fetch(
-        "http://127.0.0.1:8000/evidence/upload",
+        `${API_BASE_URL}/evidence/upload`,
         {
           method: "POST",
           body: formData,

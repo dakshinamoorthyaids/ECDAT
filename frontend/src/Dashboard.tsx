@@ -23,6 +23,7 @@ import {
   FileArchive,
 } from "lucide-react";
 
+import { API_BASE_URL } from "./api";
 import UploadEvidence from "./UploadEvidence";
 import "./Dashboard.css";
 
@@ -201,7 +202,7 @@ export default function Dashboard({
     const loadEvidence = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/evidence"
+          `${API_BASE_URL}/evidence`
         );
 
         if (!response.ok) {
@@ -259,7 +260,7 @@ export default function Dashboard({
   const handleLogout = async () => {
     try {
       await fetch(
-        "http://127.0.0.1:8000/logout",
+        `${API_BASE_URL}/logout`,
         {
           method: "POST",
           headers: {

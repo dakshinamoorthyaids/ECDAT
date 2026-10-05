@@ -17,14 +17,13 @@ import {
   ChevronDown,
 } from "lucide-react";
 
+import { API_BASE_URL } from "./api";
 import "./ForensicOfficerDashboard.css";
 
 import Evidence from "./Evidence";
 import Verification from "./Verification";
 import ChainOfCustody from "./ChainOfCustody";
 import GenerateReport from "./GenerateReport";
-
-const API_BASE_URL = "http://127.0.0.1:8000";
 
 type ActivePage =
   | "dashboard"

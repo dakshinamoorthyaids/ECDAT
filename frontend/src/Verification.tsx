@@ -9,6 +9,7 @@ import {
   Loader2,
 } from "lucide-react";
 
+import { API_BASE_URL } from "./api";
 import "./Verification.css";
 
 type VerificationResult = {
@@ -77,7 +78,7 @@ function Verification({
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/evidence/verify/${encodeURIComponent(
+        `${API_BASE_URL}/evidence/verify/${encodeURIComponent(
           trimmedEvidenceId
         )}`
       );
@@ -122,7 +123,7 @@ function Verification({
     }
 
     window.open(
-      `http://127.0.0.1:8000/evidence/tampered/${encodeURIComponent(
+      `${API_BASE_URL}/evidence/tampered/${encodeURIComponent(
         result.evidence_id
       )}`,
       "_blank"

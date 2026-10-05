@@ -20,6 +20,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+import { API_BASE_URL } from "./api";
 import "./InvestigatorDashboard.css";
 
 import Evidence from "./Evidence";
@@ -78,8 +79,6 @@ interface EvidenceReportItem extends EvidenceItem {
   auditCount: number;
   verificationStatus: string;
 }
-
-const API_BASE_URL = "http://127.0.0.1:8000";
 
 const InvestigatorDashboard: React.FC<
   InvestigatorDashboardProps

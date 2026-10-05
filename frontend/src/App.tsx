@@ -22,6 +22,8 @@ import {
   EyeOff,
 } from "lucide-react";
 
+import { API_BASE_URL } from "./api";
+
 import "./App.css";
 
 import Dashboard from "./Dashboard";
@@ -248,7 +250,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://127.0.0.1:8000/logout", {
+      await fetch(`${API_BASE_URL}/logout`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -289,7 +291,7 @@ const handleForgotPassword = async () => {
     formData.append("new_password", password);
 
     const response = await fetch(
-      "http://127.0.0.1:8000/forgot-password",
+      `${API_BASE_URL}/forgot-password`,
       {
         method: "POST",
         headers: {
@@ -359,7 +361,7 @@ const handleForgotPassword = async () => {
       );
 
       const response = await fetch(
-        "http://127.0.0.1:8000/login",
+        `${API_BASE_URL}/login`,
         {
           method: "POST",
 
