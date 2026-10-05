@@ -4,13 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "frontend": "vite",
-    "backend": "cd ../backend && python -m uvicorn main:app --reload",
-    "build": "vite",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
+  "dev": "vite",
+  "frontend": "vite",
+  "backend": "cd ../backend && python -m uvicorn main:app --reload",
+  "build": "tsc -b && vite build",
+  "preview": "vite preview"
+},
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "lucide-react": "^1.47.0",
