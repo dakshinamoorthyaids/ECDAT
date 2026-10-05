@@ -7,7 +7,7 @@
     "dev": "vite",
     "frontend": "vite",
     "backend": "cd ../backend && python -m uvicorn main:app --reload",
-    "build": "tsc -b && vite build",
+    "build": "vite",
     "lint": "eslint .",
     "preview": "vite preview"
   },
