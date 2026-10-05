@@ -1,1 +1,1 @@
-const API_BASE_URL = "https://ecdat-backend-rf4j.onrender.com";
+export const API_BASE_URL = "https://ecdat-backend-rf4j.onrender.com";
