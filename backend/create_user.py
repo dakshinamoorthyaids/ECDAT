@@ -8,6 +8,12 @@ db = SessionLocal()
 try:
     users = [
         User(
+            User(
+    username="admin",
+    email="admin@secureevidence.com",
+    password_hash=hash_password("Admin@123"),
+    role="admin"
+),
             username="investigator",
             email="investigator@secureevidence.com",
             password_hash=hash_password("Invest@123"),
