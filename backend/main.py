@@ -91,7 +91,7 @@ try:
     db.commit()
 
 finally:
-    db.close()
+    db.close()      
 
 # =========================================================
 # DATABASE SCHEMA UPDATE
@@ -696,7 +696,7 @@ def login(
     )
 
     if not user:
-
+        print("LOGIN CHECK: USER NOT FOUND", username)
         raise HTTPException(
             status_code=401,
             detail=(
