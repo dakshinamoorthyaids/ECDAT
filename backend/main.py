@@ -49,26 +49,46 @@ import mimetypes
 # =========================================================
 
 Base.metadata.create_all(bind=engine)
-from models import User
-from auth import hash_password
-from database import SessionLocal
-
-Base.metadata.create_all(bind=engine)
 
 db = SessionLocal()
 
 try:
-    admin = db.query(User).filter(User.username == "admin").first()
-
-    if not admin:
-        admin = User(
+    users = [
+        User(
             username="admin",
             email="admin@secureevidence.com",
             password_hash=hash_password("Admin@123"),
             role="admin"
+        ),
+        User(
+            username="investigator",
+            email="investigator@secureevidence.com",
+            password_hash=hash_password("Invest@123"),
+            role="Investigator"
+        ),
+        User(
+            username="legalofficer",
+            email="legal@secureevidence.com",
+            password_hash=hash_password("Legal@123"),
+            role="Legal Officer"
+        ),
+        User(
+            username="viewer",
+            email="viewer@secureevidence.com",
+            password_hash=hash_password("Viewer@123"),
+            role="Viewer"
         )
-        db.add(admin)
-        db.commit()
+    ]
+
+    for user in users:
+        existing_user = db.query(User).filter(
+            User.username == user.username
+        ).first()
+
+        if not existing_user:
+            db.add(user)
+
+    db.commit()
 
 finally:
     db.close()
