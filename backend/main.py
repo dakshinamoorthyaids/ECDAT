@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text, inspect
 
-from database import engine, Base, get_db
+from database import engine, Base, get_db, SessionLocal
 
 from models import (
     User,
