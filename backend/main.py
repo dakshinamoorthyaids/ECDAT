@@ -49,7 +49,29 @@ import mimetypes
 # =========================================================
 
 Base.metadata.create_all(bind=engine)
+from models import User
+from auth import hash_password
+from database import SessionLocal
 
+Base.metadata.create_all(bind=engine)
+
+db = SessionLocal()
+
+try:
+    admin = db.query(User).filter(User.username == "admin").first()
+
+    if not admin:
+        admin = User(
+            username="admin",
+            email="admin@secureevidence.com",
+            password_hash=hash_password("Admin@123"),
+            role="admin"
+        )
+        db.add(admin)
+        db.commit()
+
+finally:
+    db.close()
 
 # =========================================================
 # DATABASE SCHEMA UPDATE
