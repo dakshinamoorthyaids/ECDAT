@@ -147,7 +147,12 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [message, setMessage] = useState("");
-
+  const [showCreateCase, setShowCreateCase] = useState(false);
+  const [caseNumber, setCaseNumber] = useState("");
+  const [caseTitle, setCaseTitle] = useState("");
+  const [caseDescription, setCaseDescription] = useState("");
+  const [caseMessage, setCaseMessage] = useState("");
+  const [caseLoading, setCaseLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
 
   /* =========================================
@@ -243,6 +248,81 @@ function App() {
     window.location.hash = "#settings";
     setPage("settings");
   };
+  const handleCreateCase = async (event: FormEvent) => {
+  event.preventDefault();
+
+  if (!caseNumber.trim() || !caseTitle.trim()) {
+    setCaseMessage("Case number and title are required.");
+    return;
+  }
+
+  setCaseLoading(true);
+  setCaseMessage("");
+
+  try {
+    const formData = new URLSearchParams();
+
+    formData.append("case_number", caseNumber.trim());
+    formData.append("title", caseTitle.trim());
+    formData.append(
+      "description",
+      caseDescription.trim()
+    );
+    formData.append(
+      "created_by",
+      username.trim()
+    );
+
+    const response = await fetch(
+      `${API_BASE_URL}/cases`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+        body: formData.toString(),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setCaseMessage(
+        typeof data.detail === "string"
+          ? data.detail
+          : "Failed to create case."
+      );
+      return;
+    }
+
+    setCaseMessage(
+      "Case created successfully!"
+    );
+
+    setCaseNumber("");
+    setCaseTitle("");
+    setCaseDescription("");
+
+    setTimeout(() => {
+      setShowCreateCase(false);
+      setCaseMessage("");
+      openUploadEvidence();
+    }, 700);
+  } catch (error) {
+    console.error(
+      "CREATE CASE ERROR:",
+      error
+    );
+
+    setCaseMessage(
+      "Cannot connect to the backend."
+    );
+  } finally {
+    setCaseLoading(false);
+  }
+};
 
   /* =========================================
      LOGOUT
@@ -644,14 +724,139 @@ const handleForgotPassword = async () => {
        ===================================== */
 
     return (
-      <Dashboard
-        onNavigate={openEvidence}
-        onAuditLogs={openAuditLogs}
-        onVerification={openVerification}
-        onChainOfCustody={openChainOfCustody}
-        onSettings={openSettings}
-      />
-    );
+  <>
+    <Dashboard
+      onNavigate={openEvidence}
+      onAuditLogs={openAuditLogs}
+      onVerification={openVerification}
+      onChainOfCustody={openChainOfCustody}
+      onSettings={openSettings}
+    />
+
+    {(role === "admin" || role === "Investigator") && (
+      <>
+        <button
+          onClick={() => setShowCreateCase(true)}
+          style={{
+            position: "fixed",
+            top: "24px",
+            right: "24px",
+            zIndex: 1000,
+            padding: "12px 20px",
+            borderRadius: "10px",
+            border: "none",
+            cursor: "pointer",
+            fontWeight: 600,
+          }}
+        >
+          + Create Case
+        </button>
+
+        {showCreateCase && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.55)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 2000,
+            }}
+          >
+            <form
+              onSubmit={handleCreateCase}
+              style={{
+                width: "420px",
+                maxWidth: "90%",
+                padding: "28px",
+                borderRadius: "16px",
+                background: "#fff",
+              }}
+            >
+              <h2>Create New Case</h2>
+
+              <input
+                type="text"
+                placeholder="Case Number"
+                value={caseNumber}
+                onChange={(e) =>
+                  setCaseNumber(e.target.value)
+                }
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  marginTop: "14px",
+                  boxSizing: "border-box",
+                }}
+              />
+
+              <input
+                type="text"
+                placeholder="Case Title"
+                value={caseTitle}
+                onChange={(e) =>
+                  setCaseTitle(e.target.value)
+                }
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  marginTop: "12px",
+                  boxSizing: "border-box",
+                }}
+              />
+
+              <textarea
+                placeholder="Description"
+                value={caseDescription}
+                onChange={(e) =>
+                  setCaseDescription(e.target.value)
+                }
+                rows={4}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  marginTop: "12px",
+                  boxSizing: "border-box",
+                }}
+              />
+
+              {caseMessage && (
+                <p>{caseMessage}</p>
+              )}
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  marginTop: "18px",
+                }}
+              >
+                <button
+                  type="submit"
+                  disabled={caseLoading}
+                >
+                  {caseLoading
+                    ? "Creating..."
+                    : "Create Case"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowCreateCase(false)
+                  }
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </>
+    )}
+  </>
+);
   }
 
   /* =========================================
