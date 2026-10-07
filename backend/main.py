@@ -598,13 +598,9 @@ def serialize_evidence(
 def home():
 
     return {
-        "message": (
-            "Secure Digital Evidence "
-            "Management System API is running"
-        ),
-        "status": "success",
-    }
-
+    "message": "ECDAT API is running",
+    "status": "success",
+}
 
 # =========================================================
 # HEALTH
