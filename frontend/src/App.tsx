@@ -43,7 +43,7 @@ import GenerateReport from "./GenerateReport";
    ========================================= */
 
 type Role =
-  | "Admin"
+  | "admin"
   | "Investigator"
   | "Legal Officer"
   | "Viewer";
@@ -128,12 +128,12 @@ function App() {
   const [role, setRole] = useState<Role>(() => {
     const savedRole = localStorage.getItem("role");
 
-    if (
-      savedRole === "Admin" ||
-      savedRole === "Investigator" ||
-      savedRole === "Legal Officer" ||
-      savedRole === "Viewer"
-    ) {
+   if (
+  savedRole === "admin" ||
+  savedRole === "Investigator" ||
+  savedRole === "Legal Officer" ||
+  savedRole === "Viewer"
+) {
       return savedRole;
     }
 
@@ -1014,11 +1014,11 @@ const handleForgotPassword = async () => {
                 }
                 label="Admin"
                 selected={
-                  role === "Admin"
-                }
-                onClick={() =>
-                  setRole("Admin")
-                }
+  role === "admin"
+}
+onClick={() =>
+  setRole("admin")
+}
               />
 
               {/* INVESTIGATOR */}
