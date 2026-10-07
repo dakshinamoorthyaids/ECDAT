@@ -215,14 +215,7 @@ export default function UploadEvidence({
   const handleUpload = async () => {
     setMessage("");
 
-    /* Case validation */
-    if (!selectedCaseId) {
-      setMessage(
-        "Please select a case before uploading evidence."
-      );
-
-      return;
-    }
+    
 
     /* File validation */
     if (!file) {
@@ -270,10 +263,16 @@ export default function UploadEvidence({
          CASE ID IS NOW SENT TO BACKEND
          ================================ */
 
-      formData.append(
-        "case_id",
-        selectedCaseId
-      );
+      if (selectedCaseId.trim()) {
+ /* CASE IS OPTIONAL */
+
+if (selectedCaseId.trim()) {
+  formData.append(
+    "case_id",
+    selectedCaseId.trim()
+  );
+}
+}
 
       formData.append(
         "file",
@@ -556,10 +555,15 @@ export default function UploadEvidence({
 
                 Select Case
 
-                <span className="required">
-                  *
-                </span>
-
+<span
+  style={{
+    marginLeft: "4px",
+    fontWeight: 400,
+    color: "#888",
+  }}
+>
+  (Optional)
+</span>
               </label>
 
               <div className="input-wrapper">
@@ -619,19 +623,19 @@ export default function UploadEvidence({
                 </div>
               )}
 
-              {!isLoadingCases &&
-                cases.length === 0 && (
-                  <div
-                    style={{
-                      marginTop: "8px",
-                      color: "#c62828",
-                      fontSize: "13px",
-                    }}
-                  >
-                    No cases available.
-                    Please create a case first.
-                  </div>
-                )}
+             {!isLoadingCases &&
+  cases.length === 0 && (
+    <div
+      style={{
+        marginTop: "8px",
+        color: "#666",
+        fontSize: "13px",
+      }}
+    >
+      No cases available. You can upload evidence
+      without a case and link it later.
+    </div>
+  )}
 
             </div>
 
@@ -949,49 +953,28 @@ export default function UploadEvidence({
 
             <div className="upload-actions">
 
-              <button
-                type="button"
-                className="cancel-button"
-                onClick={onBack}
-                disabled={isUploading}
-              >
+             <button
+  type="button"
+  className="upload-submit"
+  onClick={handleUpload}
+  disabled={isUploading}
+>
+  {isUploading ? (
+    <>
+      <span className="loading-spinner" />
 
-                <ArrowLeft size={17} />
+      Processing...
+    </>
+  ) : (
+    <>
+      <Upload size={18} />
 
-                Cancel
+      Upload Evidence
 
-              </button>
-
-
-              <button
-                type="button"
-                className="upload-submit"
-                onClick={handleUpload}
-                disabled={
-                  isUploading ||
-                  !selectedCaseId ||
-                  cases.length === 0
-                }
-              >
-
-                {isUploading ? (
-                  <>
-                    <span className="loading-spinner" />
-
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Upload size={18} />
-
-                    Upload Evidence
-
-                    <ChevronRight size={18} />
-                  </>
-                )}
-
-              </button>
-
+      <ChevronRight size={18} />
+    </>
+  )}
+</button>
             </div>
 
           </div>

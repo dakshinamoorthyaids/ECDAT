@@ -58,32 +58,37 @@ try:
             username="admin",
             email="admin@secureevidence.com",
             password_hash=hash_password("Admin@123"),
-            role="admin"
+            role="admin",
         ),
         User(
             username="investigator",
             email="investigator@secureevidence.com",
             password_hash=hash_password("Invest@123"),
-            role="Investigator"
+            role="Investigator",
         ),
         User(
             username="legalofficer",
             email="legal@secureevidence.com",
             password_hash=hash_password("Legal@123"),
-            role="Legal Officer"
+            role="Legal Officer",
         ),
         User(
             username="viewer",
             email="viewer@secureevidence.com",
             password_hash=hash_password("Viewer@123"),
-            role="Viewer"
-        )
+            role="Viewer",
+        ),
     ]
 
     for user in users:
-        existing_user = db.query(User).filter(
-            User.username == user.username
-        ).first()
+
+        existing_user = (
+            db.query(User)
+            .filter(
+                User.username == user.username
+            )
+            .first()
+        )
 
         if not existing_user:
             db.add(user)
@@ -91,7 +96,8 @@ try:
     db.commit()
 
 finally:
-    db.close()      
+    db.close()
+
 
 # =========================================================
 # DATABASE SCHEMA UPDATE
@@ -103,7 +109,9 @@ def update_chain_of_custody_schema():
 
         inspector = inspect(engine)
 
-        if not inspector.has_table("chain_of_custody"):
+        if not inspector.has_table(
+            "chain_of_custody"
+        ):
             return
 
         existing_columns = {
@@ -218,14 +226,18 @@ def update_evidence_schema():
 
             current_storage_path = os.path.realpath(
                 os.path.join(
-                    os.path.dirname(os.path.abspath(__file__)),
+                    os.path.dirname(
+                        os.path.abspath(__file__)
+                    ),
                     "storage",
                     "current",
                 )
             )
 
             original_storage_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
+                os.path.dirname(
+                    os.path.abspath(__file__)
+                ),
                 "storage",
                 "original",
             )
@@ -244,27 +256,48 @@ def update_evidence_schema():
 
                 original_file_path = os.path.join(
                     original_storage_path,
-                    os.path.basename(current_file_path),
+                    os.path.basename(
+                        current_file_path
+                    ),
                 )
 
                 try:
-                    with open(current_file_path, "rb") as current_file:
-                        current_data = current_file.read()
 
-                    with open(original_file_path, "rb") as original_file:
-                        original_data = original_file.read()
+                    with open(
+                        current_file_path,
+                        "rb",
+                    ) as current_file:
+
+                        current_data = (
+                            current_file.read()
+                        )
+
+                    with open(
+                        original_file_path,
+                        "rb",
+                    ) as original_file:
+
+                        original_data = (
+                            original_file.read()
+                        )
 
                 except OSError:
+
                     continue
 
                 if current_data != original_data:
                     continue
 
                 try:
-                    encrypted_hmac_hash = calculate_hmac(
-                        current_data
+
+                    encrypted_hmac_hash = (
+                        calculate_hmac(
+                            current_data
+                        )
                     )
+
                 except ValueError:
+
                     continue
 
                 connection.execute(
@@ -276,8 +309,12 @@ def update_evidence_schema():
                         """
                     ),
                     {
-                        "encrypted_hmac_hash": encrypted_hmac_hash,
-                        "evidence_id": legacy_record["id"],
+                        "encrypted_hmac_hash": (
+                            encrypted_hmac_hash
+                        ),
+                        "evidence_id": (
+                            legacy_record["id"]
+                        ),
                     },
                 )
 
@@ -585,8 +622,7 @@ def serialize_evidence(
         case = (
             db.query(Case)
             .filter(
-                Case.case_id
-                == evidence.case_id
+                Case.case_id == evidence.case_id
             )
             .first()
         )
@@ -640,9 +676,10 @@ def serialize_evidence(
 def home():
 
     return {
-    "message": "ECDAT API is running",
-    "status": "success",
-}
+        "message": "ECDAT API is running",
+        "status": "success",
+    }
+
 
 # =========================================================
 # HEALTH
@@ -696,7 +733,12 @@ def login(
     )
 
     if not user:
-        print("LOGIN CHECK: USER NOT FOUND", username)
+
+        print(
+            "LOGIN CHECK: USER NOT FOUND",
+            username,
+        )
+
         raise HTTPException(
             status_code=401,
             detail=(
@@ -868,14 +910,14 @@ def rbac_test(
     role: str,
 ):
 
-   if not check_role(
-    role,
-    [
-        "Admin",
-        "Investigator",
-        "Legal Officer",
-    ],
-):
+    if not check_role(
+        role,
+        [
+            "Admin",
+            "Investigator",
+            "Legal Officer",
+        ],
+    ):
 
         raise HTTPException(
             status_code=403,
@@ -883,8 +925,8 @@ def rbac_test(
                 "Access denied for this role"
             ),
         )
-   
-   return {
+
+    return {
         "message": "RBAC access granted",
         "role": role,
     }
@@ -929,8 +971,7 @@ def create_case(
     current_user = (
         db.query(User)
         .filter(
-            User.username
-            == created_by.strip()
+            User.username == created_by.strip()
         )
         .first()
     )
@@ -945,9 +986,19 @@ def create_case(
             ),
         )
 
-    if current_user.role not in [
-        "Admin",
-        "Investigator",
+    user_role = (
+        str(current_user.role)
+        .strip()
+        .lower()
+    )
+
+    # FIXED:
+    # Removed the duplicate raise that was
+    # incorrectly outside the if block.
+
+    if user_role not in [
+        "admin",
+        "investigator",
     ]:
 
         raise HTTPException(
@@ -961,8 +1012,7 @@ def create_case(
     existing_case = (
         db.query(Case)
         .filter(
-            Case.case_number
-            == case_number
+            Case.case_number == case_number
         )
         .first()
     )
@@ -1059,9 +1109,7 @@ def get_all_cases(
 # GET CASE EVIDENCE
 # ---------------------------------------------------------
 
-@app.get(
-    "/cases/{case_id}/evidence"
-)
+@app.get("/cases/{case_id}/evidence")
 def get_case_evidence(
     case_id: str,
     db: Session = Depends(get_db),
@@ -1085,8 +1133,7 @@ def get_case_evidence(
     evidence_records = (
         db.query(Evidence)
         .filter(
-            Evidence.case_id
-            == case.case_id
+            Evidence.case_id == case.case_id
         )
         .order_by(
             Evidence.id.desc()
@@ -1116,9 +1163,7 @@ def get_case_evidence(
 # GET CASE BY CASE NUMBER
 # ---------------------------------------------------------
 
-@app.get(
-    "/cases/number/{case_number}"
-)
+@app.get("/cases/number/{case_number}")
 def get_case_by_number(
     case_number: str,
     db: Session = Depends(get_db),
@@ -1127,8 +1172,7 @@ def get_case_by_number(
     case = (
         db.query(Case)
         .filter(
-            Case.case_number
-            == case_number
+            Case.case_number == case_number
         )
         .first()
     )
@@ -1599,9 +1643,7 @@ def preserve_tampered_copy(
 # VIEW PRESERVED TAMPERED FILE
 # =========================================================
 
-@app.get(
-    "/evidence/tampered/{evidence_id}"
-)
+@app.get("/evidence/tampered/{evidence_id}")
 def view_tampered_evidence(
     evidence_id: str,
     request: Request,
@@ -1611,8 +1653,7 @@ def view_tampered_evidence(
     evidence = (
         db.query(Evidence)
         .filter(
-            Evidence.evidence_id
-            == evidence_id
+            Evidence.evidence_id == evidence_id
         )
         .first()
     )
@@ -1624,10 +1665,7 @@ def view_tampered_evidence(
             detail="Evidence not found",
         )
 
-    if (
-        evidence.status.lower()
-        != "tampered"
-    ):
+    if evidence.status.lower() != "tampered":
 
         raise HTTPException(
             status_code=400,
@@ -1652,9 +1690,7 @@ def view_tampered_evidence(
                 filename,
             )
 
-            if os.path.isfile(
-                full_path
-            ):
+            if os.path.isfile(full_path):
 
                 tampered_files.append(
                     full_path
@@ -1703,10 +1739,7 @@ def view_tampered_evidence(
                 "Encrypted evidence data is empty"
             )
 
-        if (
-            len(encrypted_data) % 16
-            != 0
-        ):
+        if len(encrypted_data) % 16 != 0:
 
             raise ValueError(
                 "Invalid encrypted evidence "
@@ -1839,23 +1872,34 @@ def view_evidence(
     )
 
     if not evidence:
+
         raise HTTPException(
             status_code=404,
             detail="Evidence not found",
         )
 
-    if not os.path.exists(evidence.file_path):
+    if not os.path.exists(
+        evidence.file_path
+    ):
+
         raise HTTPException(
             status_code=404,
-            detail="Encrypted evidence file not found",
+            detail=(
+                "Encrypted evidence file not found"
+            ),
         )
 
     try:
 
-        with open(evidence.file_path, "rb") as file:
+        with open(
+            evidence.file_path,
+            "rb",
+        ) as file:
+
             stored_data = file.read()
 
         if len(stored_data) <= 16:
+
             raise ValueError(
                 "Invalid encrypted evidence file"
             )
@@ -1863,14 +1907,17 @@ def view_evidence(
         aes_key = generate_aes_key()
 
         iv = stored_data[:16]
+
         encrypted_data = stored_data[16:]
 
         if len(encrypted_data) == 0:
+
             raise ValueError(
                 "Encrypted evidence data is empty"
             )
 
         if len(encrypted_data) % 16 != 0:
+
             raise ValueError(
                 "Invalid encrypted evidence data length"
             )
@@ -1882,6 +1929,7 @@ def view_evidence(
         )
 
         if not decrypted_data:
+
             raise ValueError(
                 "Decrypted evidence data is empty"
             )
@@ -1908,14 +1956,20 @@ def view_evidence(
 
         raise HTTPException(
             status_code=500,
-            detail=f"Unable to view evidence: {str(error)}",
+            detail=(
+                f"Unable to view evidence: "
+                f"{str(error)}"
+            ),
         )
 
     except Exception as error:
 
         raise HTTPException(
             status_code=500,
-            detail=f"Unable to view evidence: {str(error)}",
+            detail=(
+                f"Unable to view evidence: "
+                f"{str(error)}"
+            ),
         )
 
 
@@ -1939,6 +1993,7 @@ def delete_evidence(
     )
 
     if not evidence:
+
         raise HTTPException(
             status_code=404,
             detail="Evidence not found",
@@ -1947,11 +2002,17 @@ def delete_evidence(
     try:
 
         # Delete current encrypted file
-        if os.path.exists(evidence.file_path):
-            os.remove(evidence.file_path)
+        if os.path.exists(
+            evidence.file_path
+        ):
+
+            os.remove(
+                evidence.file_path
+            )
 
         # Delete database record
         db.delete(evidence)
+
         db.commit()
 
         return {
@@ -1965,7 +2026,10 @@ def delete_evidence(
 
         raise HTTPException(
             status_code=500,
-            detail=f"Unable to delete evidence: {str(error)}",
+            detail=(
+                f"Unable to delete evidence: "
+                f"{str(error)}"
+            ),
         )
 
 
@@ -1973,9 +2037,7 @@ def delete_evidence(
 # VERIFY EVIDENCE
 # =========================================================
 
-@app.get(
-    "/evidence/verify/{evidence_id}"
-)
+@app.get("/evidence/verify/{evidence_id}")
 def verify_evidence(
     evidence_id: str,
     request: Request,
@@ -1985,8 +2047,7 @@ def verify_evidence(
     evidence = (
         db.query(Evidence)
         .filter(
-            Evidence.evidence_id
-            == evidence_id
+            Evidence.evidence_id == evidence_id
         )
         .first()
     )
@@ -2001,11 +2062,15 @@ def verify_evidence(
     current_storage_path = os.path.realpath(
         CURRENT_STORAGE_DIR
     )
+
     evidence_file_path = os.path.realpath(
         evidence.file_path
     )
 
-    if os.path.dirname(evidence_file_path) != current_storage_path:
+    if (
+        os.path.dirname(evidence_file_path)
+        != current_storage_path
+    ):
 
         raise HTTPException(
             status_code=409,
@@ -2073,9 +2138,6 @@ def verify_evidence(
         # -------------------------------------------------
         # ENCRYPTED FILE INTEGRITY CHECK
         # -------------------------------------------------
-        # Check the encrypted file itself before attempting
-        # decryption. Any change to the current encrypted
-        # file is treated as tampering immediately.
 
         if not encrypted_hmac_match:
 
@@ -2149,10 +2211,16 @@ def verify_evidence(
                 "hmac_hash": evidence.hmac_hash,
             }
 
-        # First 16 bytes = IV
+        # -------------------------------------------------
+        # FIRST 16 BYTES = IV
+        # -------------------------------------------------
+
         iv = stored_data[:16]
 
-        # Remaining bytes = ciphertext
+        # -------------------------------------------------
+        # REMAINING BYTES = CIPHERTEXT
+        # -------------------------------------------------
+
         encrypted_data = stored_data[16:]
 
         if len(encrypted_data) == 0:
@@ -2161,10 +2229,7 @@ def verify_evidence(
                 "Encrypted evidence data is empty"
             )
 
-        if (
-            len(encrypted_data) % 16
-            != 0
-        ):
+        if len(encrypted_data) % 16 != 0:
 
             raise ValueError(
                 "Invalid encrypted evidence "
@@ -2172,12 +2237,15 @@ def verify_evidence(
             )
 
         try:
+
             original_data = decrypt_data(
                 encrypted_data,
                 iv,
                 aes_key,
             )
+
         except Exception as error:
+
             raise ValueError(
                 "Encrypted evidence could not be decrypted"
             ) from error
@@ -2265,7 +2333,9 @@ def verify_evidence(
                 ),
                 "sha256_match": hash_match,
                 "hmac_match": hmac_match,
-                "encrypted_hmac_match": encrypted_hmac_match,
+                "encrypted_hmac_match": (
+                    encrypted_hmac_match
+                ),
                 "original_sha256": (
                     evidence.sha256_hash
                 ),
@@ -2344,7 +2414,9 @@ def verify_evidence(
             ),
             "sha256_match": hash_match,
             "hmac_match": hmac_match,
-            "encrypted_hmac_match": encrypted_hmac_match,
+            "encrypted_hmac_match": (
+                encrypted_hmac_match
+            ),
             "original_sha256": (
                 evidence.sha256_hash
             ),
@@ -2470,9 +2542,7 @@ def verify_evidence(
 # CHAIN OF CUSTODY
 # =========================================================
 
-@app.get(
-    "/evidence/custody/{evidence_id}"
-)
+@app.get("/evidence/custody/{evidence_id}")
 def get_chain_of_custody(
     evidence_id: str,
     db: Session = Depends(get_db),
@@ -2481,8 +2551,7 @@ def get_chain_of_custody(
     evidence = (
         db.query(Evidence)
         .filter(
-            Evidence.evidence_id
-            == evidence_id
+            Evidence.evidence_id == evidence_id
         )
         .first()
     )
@@ -2578,9 +2647,7 @@ def get_all_audit_logs(
 # AUDIT LOGS FOR ONE EVIDENCE
 # =========================================================
 
-@app.get(
-    "/audit-logs/{evidence_id}"
-)
+@app.get("/audit-logs/{evidence_id}")
 def get_audit_logs(
     evidence_id: str,
     db: Session = Depends(get_db),
@@ -2589,8 +2656,7 @@ def get_audit_logs(
     evidence = (
         db.query(Evidence)
         .filter(
-            Evidence.evidence_id
-            == evidence_id
+            Evidence.evidence_id == evidence_id
         )
         .first()
     )
@@ -2605,8 +2671,7 @@ def get_audit_logs(
     logs = (
         db.query(AuditLog)
         .filter(
-            AuditLog.evidence_id
-            == evidence.id
+            AuditLog.evidence_id == evidence.id
         )
         .order_by(
             AuditLog.created_at.asc()
