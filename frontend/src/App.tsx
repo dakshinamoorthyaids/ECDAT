@@ -43,7 +43,7 @@ import GenerateReport from "./GenerateReport";
    ========================================= */
 
 type Role =
-  | "admin"
+  | "Admin"
   | "Investigator"
   | "Legal Officer"
   | "Viewer";
@@ -129,7 +129,7 @@ function App() {
     const savedRole = localStorage.getItem("role");
 
    if (
-  savedRole === "admin" ||
+  savedRole === "Admin" ||
   savedRole === "Investigator" ||
   savedRole === "Legal Officer" ||
   savedRole === "Viewer"
@@ -733,7 +733,7 @@ const handleForgotPassword = async () => {
       onSettings={openSettings}
     />
 
-    {(role === "admin" || role === "Investigator") && (
+    role === "Admin" || role === "Investigator") && (
       <>
         <button
           onClick={() => setShowCreateCase(true)}
@@ -854,7 +854,7 @@ const handleForgotPassword = async () => {
           </div>
         )}
       </>
-    )}
+    )
   </>
 );
   }
@@ -1219,10 +1219,10 @@ const handleForgotPassword = async () => {
                 }
                 label="Admin"
                 selected={
-  role === "admin"
+  role === "Admin"
 }
 onClick={() =>
-  setRole("admin")
+  setRole("Admin")
 }
               />
 
